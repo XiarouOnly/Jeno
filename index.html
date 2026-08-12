@@ -14,7 +14,7 @@
         #gallery-box { height: 100vh; overflow-y: auto; padding: 16px; background: #09090b; }
         .gallery-header { padding: 10px 0 20px 0; }
         .gallery-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; }
-        .search-disguise { width: 100%; background: rgba(255,255,255,0.07); border: none; border-radius: 20px; padding: 12px; color: #fff; text-align: center; outline: none; margin-bottom: 20px; font-size: 0.9rem; }
+        .search-disguise { width: 100%; background: rgba(255,255,255,0.07); border: none; border-radius: 20px; padding: 12px; color: #fff; text-align: center; outline: none; margin-bottom: 20px; font-size: 0.9rem;}
         .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .gallery-item { border-radius: 16px; overflow: hidden; background: #18181b; }
         .gallery-item img { width: 100%; height: 200px; object-fit: cover; }
@@ -23,16 +23,15 @@
         #chat-box { flex: 1; display: flex; flex-direction: column; height: 100vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://i.pinimg.com/736x/50/cd/3f/50cd3fa03507dc3d684e58254262b5ab.jpg'); background-size: cover; background-position: center; }
         .chat-header { background: rgba(0,0,0,0.4); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .header-title { font-weight: 800; font-size: 1.2rem; }
+        .online-count { font-size: 0.9rem; color: #10b981; font-weight: 700; }
         
         #messages { flex: 1; padding: 16px 16px 120px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
         .msg-wrapper { display: flex; gap: 8px; align-items: flex-end; max-width: 85%; }
         .msg-wrapper.me { align-self: flex-end; flex-direction: row-reverse; }
-        .msg { padding: 10px 16px; font-size: 0.95rem; font-weight: 500; display: flex; flex-direction: column; }
+        .msg { padding: 10px 16px; font-size: 0.95rem; font-weight: 500; }
         .msg-wrapper.other .msg { background: #fff; color: #000; border-radius: 18px 18px 18px 4px; }
         .msg-wrapper.me .msg { background: #6366f1; color: #fff; border-radius: 18px 18px 4px 18px; }
-        .msg-info { font-size: 0.65rem; opacity: 0.7; margin-top: 4px; align-self: flex-end; }
 
-        /* INPUT POPUP */
         .input-popup { position: fixed; bottom: 80px; left: 15px; right: 15px; background: #18181b; padding: 12px; border-radius: 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); z-index: 100; border: 1px solid rgba(255,255,255,0.1); }
         .reaction-bar { display: flex; justify-content: space-around; padding-bottom: 5px; cursor: pointer; font-size: 1.4rem; }
         .input-wrapper { display: flex; gap: 10px; width: 100%; }
@@ -57,13 +56,7 @@
         </div>
         <div class="gallery-grid" id="photo-grid">
             <script>
-                const imgs = [
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwAq_65nOwL-USREFZeHngphe9NnHx3zQbBH2LtfTzew&s=10", 
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjalF-HLqxpDR2Qc6SKq8ZSGj18OSQzBLrR3wNCm7D_g&s=10", 
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpPTcP0kghReb6o73Z6SJ8x1jXkrCj4-Y9n6ic_b_zww&s=10", 
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRGnosczqfmu2NnLIUi-X2ESlYnLidxF-o-9E4KUlnAw&s=10", 
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQX5OlvCvIJoA7iXiClsS3MeZFHh6c1I3gVxmb6AQI5HbRyZRqTy8gjan4n&s=10"
-                ];
+                const imgs = ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwAq_65nOwL-USREFZeHngphe9NnHx3zQbBH2LtfTzew&s=10", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjalF-HLqxpDR2Qc6SKq8ZSGj18OSQzBLrR3wNCm7D_g&s=10", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpPTcP0kghReb6o73Z6SJ8x1jXkrCj4-Y9n6ic_b_zww&s=10", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRGnosczqfmu2NnLIUi-X2ESlYnLidxF-o-9E4KUlnAw&s=10", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQX5OlvCvIJoA7iXiClsS3MeZFHh6c1I3gVxmb6AQI5HbRyZRqTy8gjan4n&s=10"];
                 for(let i=0; i<20; i++) document.write(`<div class="gallery-item"><img src="${imgs[i % 5]}"></div>`);
             </script>
         </div>
@@ -106,41 +99,44 @@
         measurementId: "G-F09DRMWCSL"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const db = getDatabase(initializeApp(firebaseConfig));
     const chatRef = ref(db, 'chats');
-
-    if(!localStorage.getItem('my_id')) localStorage.setItem('my_id', Math.random().toString(36).substr(2, 9));
-    const myId = localStorage.getItem('my_id');
+    const presenceRef = ref(db, 'presence');
+    
+    // Pastikan ID unik per HP (nggak ganti-ganti tiap refresh)
+    const myId = localStorage.getItem('my_id') || Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('my_id', myId);
 
     window.checkPw = () => { 
         if(document.getElementById('pw').value === 'y') { 
             document.getElementById('gallery-box').classList.add('hidden'); 
             document.getElementById('chat-box').classList.remove('hidden'); 
-        } else { 
-            document.getElementById('pw').value = ''; 
-        } 
+            // Set online pas login
+            set(ref(db, 'presence/' + myId), true);
+            onDisconnect(ref(db, 'presence/' + myId)).remove();
+        } else { document.getElementById('pw').value = ''; } 
     };
 
     window.panicMode = () => { 
         document.getElementById('chat-box').classList.add('hidden'); 
-        document.getElementById('gallery-box').classList.remove('hidden'); 
-        document.getElementById('input-popup').classList.add('hidden'); 
+        document.getElementById('gallery-box').classList.remove('hidden');
+        // Set offline pas keluar (panic mode)
+        set(ref(db, 'presence/' + myId), null);
     };
 
-    window.toggleInput = () => { 
-        const popup = document.getElementById('input-popup');
-        popup.classList.toggle('hidden'); 
-        if(!popup.classList.contains('hidden')) document.getElementById('msg').focus(); 
-    };
+    // Update count setiap kali data presence berubah
+    onValue(presenceRef, (s) => {
+        const count = s.val() ? Object.keys(s.val()).length : 1;
+        document.getElementById('online-count').innerText = '👁️ ' + count;
+    });
 
+    window.toggleInput = () => { document.getElementById('input-popup').classList.toggle('hidden'); document.getElementById('msg').focus(); };
     window.sendReaction = (emoji) => push(chatRef, { sender: myId, type: 'reaction', emoji: emoji });
 
     window.showEmoji = (emoji) => {
         for(let i=0; i<5; i++) {
             const el = document.createElement('div');
-            el.className = 'emoji-float'; 
-            el.innerHTML = emoji;
+            el.className = 'emoji-float'; el.innerHTML = emoji;
             el.style.left = (Math.random() * 80 + 10) + '%';
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 2000);
@@ -152,18 +148,10 @@
         const isChatActive = !document.getElementById('chat-box').classList.contains('hidden');
 
         if(data.type === 'reaction') {
-            if(isChatActive) {
-                showEmoji(data.emoji);
-            }
+            if(isChatActive) showEmoji(data.emoji);
         } else {
             const container = document.getElementById('messages');
-            container.innerHTML += `
-                <div class="msg-wrapper ${data.sender === myId ? 'me' : 'other'}">
-                    <div class="msg">
-                        <div>${data.text}</div>
-                        <div class="msg-info">${data.time || ''}</div>
-                    </div>
-                </div>`;
+            container.innerHTML += `<div class="msg-wrapper ${data.sender === myId ? 'me' : 'other'}"><div class="msg"><div>${data.text}</div></div></div>`;
             container.scrollTop = container.scrollHeight;
         }
     });
@@ -172,13 +160,7 @@
         e.preventDefault();
         const input = document.getElementById('msg');
         if(!input.value.trim()) return;
-        
-        push(chatRef, { 
-            sender: myId, 
-            text: input.value.trim(), 
-            time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) 
-        });
-        
+        push(chatRef, { sender: myId, text: input.value.trim() });
         input.value = '';
         document.getElementById('input-popup').classList.add('hidden');
     };
