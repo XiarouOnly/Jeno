@@ -10,19 +10,86 @@
         
         body { 
             height: 100vh; margin: 0;
+            background: #09090b;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .chat-container { width: 100%; max-width: 480px; height: 100vh; display: flex; flex-direction: column; position: relative; margin: auto; }
+
+        /* HEADING & DISGUISE GALLERY */
+        #gallery-box {
+            height: 100vh;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #09090b;
+        }
+
+        .gallery-header {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 10px 0;
+        }
+
+        .gallery-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #f4f4f5;
+        }
+
+        /* KAMUFLASE INPUT PENCARIAN */
+        .search-disguise {
+            width: 100%;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 10px 16px;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .search-disguise::placeholder { color: #71717a; }
+
+        /* GRID FOTO JENO REPEATABLE (BISA DI-SCROLL) */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding-bottom: 40px;
+        }
+
+        .gallery-item {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #18181b;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ROOM CHAT STYLES */
+        body.chat-active {
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
                         url('https://i.pinimg.com/736x/50/cd/3f/50cd3fa03507dc3d684e58254262b5ab.jpg');
             background-size: cover; background-position: center; background-attachment: fixed;
-            display: flex; justify-content: center; align-items: center; overflow: hidden;
         }
-        
-        .chat-container { width: 100%; max-width: 480px; height: 100vh; display: flex; flex-direction: column; position: relative; }
-        
-        /* HEADER */
-        .chat-header { background: rgba(0,0,0,0.3); color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .header-title { font-weight: 800; font-size: 1.2rem; }
 
-        /* AREA CHAT */
+        .chat-header { background: rgba(0,0,0,0.4); color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .header-title { font-weight: 800; font-size: 1.2rem; }
+        .online-count { font-size: 0.9rem; color: #10b981; font-weight: 700; }
+
         #messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
         .msg-wrapper { display: flex; gap: 8px; align-items: flex-end; max-width: 85%; }
         .msg-wrapper.me { align-self: flex-end; flex-direction: row-reverse; }
@@ -32,34 +99,43 @@
         .msg-wrapper.me .msg { background: #6366f1; color: #fff; border-radius: 18px 18px 4px 18px; }
         .msg-info { font-size: 0.65rem; opacity: 0.7; align-self: flex-end; margin-top: 2px; }
 
-        /* FAKE LOGIN (FAN PAGE STYLE) */
-        .box { padding: 30px; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); border-radius: 20px; text-align: center; width: 85%; border: 1px solid rgba(255,255,255,0.1); }
-        .box img { width: 120px; height: 120px; border-radius: 50%; margin-bottom: 15px; border: 3px solid #fff; object-fit: cover; }
-        .box h3 { color: #fff; margin-bottom: 15px; }
-        input[type="password"] { width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; text-align: center; }
-
         /* FLOATING LOVE ANIMATION */
         .heart { position: fixed; font-size: 25px; pointer-events: none; animation: floatUp 1.5s ease-out forwards; z-index: 1000; }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100vh); } }
 
-        /* INPUT & BUTTON */
-        .input-popup { position: fixed; bottom: 80px; left: 15px; right: 15px; background: #18181b; padding: 10px; border-radius: 30px; display: flex; box-shadow: 0 5px 20px rgba(0,0,0,0.5); z-index: 100; }
+        /* INPUT POPUP CHAT */
+        .input-popup { position: fixed; bottom: 80px; left: 15px; right: 15px; background: #18181b; padding: 10px; border-radius: 30px; display: flex; box-shadow: 0 5px 20px rgba(0,0,0,0.5); z-index: 100; border: 1px solid rgba(255,255,255,0.1); }
         .input-popup input { flex: 1; background: transparent; border: none; color: #fff; padding: 5px 10px; outline: none; }
-        .quick-btn { position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px; background: #6366f1; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; z-index: 99; font-size: 1.5rem; }
+        .quick-btn { position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px; background: #6366f1; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; z-index: 99; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="chat-container">
-    <div id="password-box" class="box">
-        <img src="https://i.pinimg.com/736x/50/cd/3f/50cd3fa03507dc3d684e58254262b5ab.jpg" alt="Jeno">
-        <h3>Jeno Lee</h3>
-        <form onsubmit="event.preventDefault(); checkPw();">
-            <input type="password" id="pw" placeholder="Enter key..." enterkeyhint="go">
-        </form>
+    <!-- GALERI FOTO (DISGUISE LOGIN) -->
+    <div id="gallery-box">
+        <div class="gallery-header">
+            <span class="gallery-title">Jeno Archive 📸</span>
+            <form onsubmit="event.preventDefault(); checkPw();">
+                <input type="password" id="pw" class="search-disguise" placeholder="Cari foto Jeno..." enterkeyhint="go">
+            </form>
+        </div>
+
+        <div class="gallery-grid">
+            <div class="gallery-item"><img src="https://i.pinimg.com/736x/50/cd/3f/50cd3fa03507dc3d684e58254262b5ab.jpg" alt="Jeno"></div>
+            <div class="gallery-item"><img src="https://i.pinimg.com/736x/8e/31/3d/8e313d33934d402fa6a715f5a2b16853.jpg" alt="Jeno"></div>
+            <div class="gallery-item"><img src="https://i.pinimg.com/564x/2b/42/70/2b4270f907fa8bbf9d7a22e2bb4a806c.jpg" alt="Jeno"></div>
+            <div class="gallery-item"><img src="https://i.pinimg.com/564x/5b/18/76/5b1876a382c78a05f1f7ef69d7249a5b.jpg" alt="Jeno"></div>
+            <div class="gallery-item"><img src="https://i.pinimg.com/736x/50/cd/3f/50cd3fa03507dc3d684e58254262b5ab.jpg" alt="Jeno"></div>
+            <div class="gallery-item"><img src="https://i.pinimg.com/736x/8e/31/3d/8e313d33934d402fa6a715f5a2b16853.jpg" alt="Jeno"></div>
+            <div class="gallery-item"><img src="https://i.pinimg.com/564x/2b/42/70/2b4270f907fa8bbf9d7a22e2bb4a806c.jpg" alt="Jeno"></div>
+            <div class="gallery-item"><img src="https://i.pinimg.com/564x/5b/18/76/5b1876a382c78a05f1f7ef69d7249a5b.jpg" alt="Jeno"></div>
+        </div>
     </div>
 
+    <!-- ROOM CHAT RAHASIA -->
     <div id="chat-box" class="hidden" style="display:flex; flex-direction:column; height:100vh;">
         <div class="chat-header">
             <span class="header-title">Jeno</span>
@@ -99,33 +175,31 @@
     const myId = localStorage.getItem('my_id');
 
     window.checkPw = function() {
-        if(document.getElementById('pw').value === 'y') {
-            document.getElementById('password-box').classList.add('hidden');
+        const pwInput = document.getElementById('pw');
+        if(pwInput.value === 'y') {
+            document.getElementById('gallery-box').classList.add('hidden');
             document.getElementById('chat-box').classList.remove('hidden');
+            document.body.classList.add('chat-active');
+
             set(ref(db, 'presence/' + myId), true);
+            onDisconnect(ref(db, 'presence/' + myId)).remove();
             onValue(ref(db, 'presence'), (s) => document.getElementById('online-count').innerText = s.val() ? Object.keys(s.val()).length : 1);
             onChildAdded(chatRef, (s) => appendMessage(s.key, s.val()));
         } else {
-            const pw = document.getElementById('pw');
-            pw.value = ''; pw.style.borderColor = 'red';
-            setTimeout(() => pw.style.borderColor = 'rgba(255,255,255,0.2)', 500);
+            pwInput.value = '';
         }
     };
 
     window.toggleInput = () => { document.getElementById('input-popup').classList.toggle('hidden'); document.getElementById('msg').focus(); };
 
     // Floating Love Logic
-    const createHeart = (x, y) => {
+    window.createHeart = (x, y) => {
         const h = document.createElement('div');
         h.className = 'heart'; h.innerHTML = '❤️';
         h.style.left = x + 'px'; h.style.top = y + 'px';
         document.body.appendChild(h);
         setTimeout(() => h.remove(), 1500);
     };
-
-    document.getElementById('messages').addEventListener('dblclick', (e) => {
-        if(e.target.closest('.msg')) createHeart(e.clientX, e.clientY);
-    });
 
     document.getElementById('chat-form').onsubmit = (e) => {
         e.preventDefault();
