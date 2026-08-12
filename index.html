@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jenobf Private Chat</title>
-    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background-color: #E5DDD5; height: 100vh; display: flex; justify-content: center; }
@@ -49,45 +48,58 @@
     </div>
 </div>
 
-<script>
-    // Key Pusher Lu
-    const PUSHER_KEY = 'd100db9166dc3e033e78'; 
-    const PUSHER_CLUSTER = 'ap1';
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+    // Configuration Firebase Asli Lu + Database URL
+    const firebaseConfig = {
+        apiKey: "AIzaSyA4D6MZ25iU1Ql9lKYyhW8x_Uni03mxyIA",
+        authDomain: "jeno-41a37.firebaseapp.com",
+        databaseURL: "https://jeno-41a37-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "jeno-41a37",
+        storageBucket: "jeno-41a37.firebasestorage.app",
+        messagingSenderId: "183074678018",
+        appId: "1:183074678018:web:9e49ad568c9b488b7ace1b",
+        measurementId: "G-F09DRMWCSL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const chatRef = ref(db, 'chats');
 
     let myName = '';
-    const PASS = '0'; // Password udah ganti jadi 0
+    const PASS = '0'; // Password masuk tetep 0
 
-    const pusher = new Pusher(PUSHER_KEY, { cluster: PUSHER_CLUSTER });
-    const channel = pusher.subscribe('jenobf-room');
-
-    channel.bind('client-pesan-baru', function(data) {
-        appendMessage(data);
-    });
-
-    function checkPw() {
+    window.checkPw = function() {
         if(document.getElementById('pw').value === PASS) {
             document.getElementById('password-box').classList.add('hidden');
             document.getElementById('login-box').classList.remove('hidden');
         } else alert('Password Salah!');
-    }
+    };
 
-    function joinChat() {
+    window.joinChat = function() {
         myName = document.getElementById('name').value.trim();
         if(!myName) return alert('Isi nama dulu!');
         document.getElementById('login-box').classList.add('hidden');
         document.getElementById('chat-box').classList.remove('hidden');
-    }
+        
+        // Membaca pesan secara Realtime
+        onChildAdded(chatRef, (snapshot) => {
+            const data = snapshot.val();
+            appendMessage(data);
+        });
+    };
 
     document.getElementById('chat-form').onsubmit = (e) => {
         e.preventDefault();
         const input = document.getElementById('msg');
         const text = input.value.trim();
         if(!text) return;
-        const dataPesan = { user: myName, text: text };
-        appendMessage(dataPesan);
-        channel.trigger('client-pesan-baru', dataPesan);
+        
+        push(chatRef, { user: myName, text: text });
         input.value = '';
-    }
+    };
 
     function appendMessage(data) {
         const container = document.getElementById('messages');
