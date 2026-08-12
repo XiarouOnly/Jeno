@@ -17,7 +17,7 @@
         .header-left { display: flex; align-items: center; gap: 10px; }
         .status-dot { width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
 
-        /* Background Foto Jeno NCT dengan Overlay Dark Aesthetic */
+        /* Background Foto Jeno Pilihan Lu */
         #messages { 
             flex: 1; 
             padding: 16px 14px; 
@@ -26,7 +26,7 @@
             flex-direction: column; 
             gap: 12px; 
             background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.55)), 
-                        url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80') center/cover no-repeat;
+                        url('https://share.google/5LNhWjmDoRER5nRfs') center/cover no-repeat;
         }
 
         .msg-wrapper { display: flex; gap: 8px; align-items: flex-end; max-width: 85%; }
@@ -145,7 +145,8 @@
     const chatRef = ref(db, 'chats');
 
     let myName = '';
-    const PASS = 'y'; // Password diganti jadi "y"
+    const PASS = 'y';
+    let lastTimeShown = '';
 
     window.checkPw = function() {
         if(document.getElementById('pw').value === PASS) {
