@@ -28,7 +28,7 @@
     <div class="chat-header">Jenobf Chat</div>
     
     <div id="password-box" class="box">
-        <h3>🔐 Password Room</h3>
+        <h3>🔐 Password </h3>
         <input type="password" id="pw" placeholder="Masukkan Password">
         <button onclick="checkPw()">Masuk</button>
     </div>
@@ -52,7 +52,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
-    // Configuration Firebase Asli Lu + Database URL
     const firebaseConfig = {
         apiKey: "AIzaSyA4D6MZ25iU1Ql9lKYyhW8x_Uni03mxyIA",
         authDomain: "jeno-41a37.firebaseapp.com",
@@ -69,7 +68,7 @@
     const chatRef = ref(db, 'chats');
 
     let myName = '';
-    const PASS = '0'; // Password masuk tetep 0
+    const PASS = '0';
 
     window.checkPw = function() {
         if(document.getElementById('pw').value === PASS) {
@@ -84,7 +83,6 @@
         document.getElementById('login-box').classList.add('hidden');
         document.getElementById('chat-box').classList.remove('hidden');
         
-        // Membaca pesan secara Realtime
         onChildAdded(chatRef, (snapshot) => {
             const data = snapshot.val();
             appendMessage(data);
