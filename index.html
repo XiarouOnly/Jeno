@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jenobf Chat</title>
+    <title>Jenobf Private Chat</title>
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background-color: #E5DDD5; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        body { background-color: #E5DDD5; height: 100vh; display: flex; justify-content: center; }
         .chat-container { width: 100%; max-width: 450px; height: 100vh; background-color: #E5DDD5; display: flex; flex-direction: column; }
         .chat-header { background-color: #075E54; color: white; padding: 15px; font-weight: bold; font-size: 1.1rem; }
         #messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
@@ -17,49 +18,57 @@
         input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; outline: none; }
         button { width: 100%; padding: 12px; background: #075E54; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         #chat-form { padding: 10px; background: #F0F0F0; display: flex; gap: 10px; }
-        #chat-form input { margin: 0; flex: 1; }
-        #chat-form button { width: auto; padding: 0 20px; }
+        #chat-form input { margin: 0; flex: 1; border-radius: 20px; padding: 10px; border: 1px solid #ddd;}
+        #chat-form button { width: auto; padding: 0 20px; border-radius: 50%; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="chat-container">
-    <div class="chat-header">Jenobf Private Chat</div>
+    <div class="chat-header">Jenobf Chat</div>
     
-    <!-- Password Screen -->
     <div id="password-box" class="box">
         <h3>🔐 Password Room</h3>
         <input type="password" id="pw" placeholder="Masukkan Password">
         <button onclick="checkPw()">Masuk</button>
     </div>
 
-    <!-- Nama Screen -->
     <div id="login-box" class="box hidden">
         <h3>👋 Nama Kamu</h3>
         <input type="text" id="name" placeholder="Nama kamu...">
         <button onclick="joinChat()">Mulai Chat</button>
     </div>
 
-    <!-- Chat Screen -->
     <div id="chat-box" class="hidden" style="display:flex; flex-direction:column; height:100vh;">
         <div id="messages"></div>
         <form id="chat-form">
             <input type="text" id="msg" placeholder="Tulis pesan..." autocomplete="off">
-            <button type="submit">Kirim</button>
+            <button type="submit">➤</button>
         </form>
     </div>
 </div>
 
 <script>
+    // Key Pusher Lu
+    const PUSHER_KEY = 'd100db9166dc3e033e78'; 
+    const PUSHER_CLUSTER = 'ap1';
+
     let myName = '';
-    const PASS = 'kuncirahasia'; // Ganti password kalian di sini bro!
+    const PASS = 'kuncirahasia'; // Ganti password di sini kalau mau
+
+    const pusher = new Pusher(PUSHER_KEY, { cluster: PUSHER_CLUSTER });
+    const channel = pusher.subscribe('jenobf-room');
+
+    channel.bind('client-pesan-baru', function(data) {
+        appendMessage(data);
+    });
 
     function checkPw() {
         if(document.getElementById('pw').value === PASS) {
             document.getElementById('password-box').classList.add('hidden');
             document.getElementById('login-box').classList.remove('hidden');
-        } else alert('Password Salah Bro!');
+        } else alert('Password Salah!');
     }
 
     function joinChat() {
@@ -67,46 +76,29 @@
         if(!myName) return alert('Isi nama dulu!');
         document.getElementById('login-box').classList.add('hidden');
         document.getElementById('chat-box').classList.remove('hidden');
-        
-        // Ambil riwayat chat & auto refresh tiap 2 detik
-        fetchMessages();
-        setInterval(fetchMessages, 2000);
     }
 
-    async function fetchMessages() {
-        try {
-            const res = await fetch('/api/chat');
-            const data = await res.json();
-            const container = document.getElementById('messages');
-            container.innerHTML = '';
-            
-            data.forEach(item => {
-                const isMe = item.user === myName;
-                container.innerHTML += `
-                    <div class="msg ${isMe ? 'me' : ''}">
-                        <div class="author">${item.user}</div>
-                        <div>${item.text}</div>
-                    </div>`;
-            });
-            container.scrollTop = container.scrollHeight;
-        } catch(e) {}
-    }
-
-    document.getElementById('chat-form').onsubmit = async (e) => {
+    document.getElementById('chat-form').onsubmit = (e) => {
         e.preventDefault();
         const input = document.getElementById('msg');
         const text = input.value.trim();
         if(!text) return;
-        
+        const dataPesan = { user: myName, text: text };
+        appendMessage(dataPesan);
+        channel.trigger('client-pesan-baru', dataPesan);
         input.value = '';
-        await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: myName, text: text })
-        });
-        fetchMessages();
+    }
+
+    function appendMessage(data) {
+        const container = document.getElementById('messages');
+        const isMe = data.user === myName;
+        container.innerHTML += `
+            <div class="msg ${isMe ? 'me' : ''}">
+                <div class="author">${data.user}</div>
+                <div>${data.text}</div>
+            </div>`;
+        container.scrollTop = container.scrollHeight;
     }
 </script>
 </body>
-  </html>
-  
+</html>
