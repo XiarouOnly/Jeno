@@ -28,15 +28,15 @@
         #messages { flex: 1; padding: 16px 16px 120px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
         .msg-wrapper { display: flex; gap: 8px; align-items: flex-end; max-width: 85%; }
         .msg-wrapper.me { align-self: flex-end; flex-direction: row-reverse; }
-        .msg { padding: 10px 16px; font-size: 0.95rem; font-weight: 500; }
+        .msg { padding: 8px 14px; font-size: 0.95rem; font-weight: 500; display: flex; flex-direction: column; gap: 2px; }
         .msg-wrapper.other .msg { background: #fff; color: #000; border-radius: 18px 18px 18px 4px; }
         .msg-wrapper.me .msg { background: #6366f1; color: #fff; border-radius: 18px 18px 4px 18px; }
+        .msg-info { font-size: 0.65rem; opacity: 0.7; align-self: flex-end; }
 
         .input-popup { position: fixed; bottom: 80px; left: 15px; right: 15px; background: #18181b; padding: 12px; border-radius: 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); z-index: 100; border: 1px solid rgba(255,255,255,0.1); }
         .reaction-bar { display: flex; justify-content: space-around; padding-bottom: 5px; cursor: pointer; font-size: 1.4rem; }
         .input-wrapper { display: flex; gap: 10px; width: 100%; }
         .input-wrapper input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px; border-radius: 20px; outline: none; }
-        
         .quick-btn { position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px; background: #6366f1; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; z-index: 99; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); cursor: pointer; }
         
         .hidden { display: none !important; }
@@ -101,58 +101,34 @@
 
     const db = getDatabase(initializeApp(firebaseConfig));
     const chatRef = ref(db, 'chats');
-    const presenceRef = ref(db, 'presence');
-    
-    // Pastikan ID unik per HP (nggak ganti-ganti tiap refresh)
-    const myId = localStorage.getItem('my_id') || Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('my_id', myId);
+    const myId = localStorage.getItem('my_id') || (localStorage.setItem('my_id', Math.random().toString(36).substr(2, 9)) || localStorage.getItem('my_id'));
 
-    window.checkPw = () => { 
-        if(document.getElementById('pw').value === 'y') { 
-            document.getElementById('gallery-box').classList.add('hidden'); 
-            document.getElementById('chat-box').classList.remove('hidden'); 
-            // Set online pas login
-            set(ref(db, 'presence/' + myId), true);
-            onDisconnect(ref(db, 'presence/' + myId)).remove();
-        } else { document.getElementById('pw').value = ''; } 
-    };
-
-    window.panicMode = () => { 
-        document.getElementById('chat-box').classList.add('hidden'); 
-        document.getElementById('gallery-box').classList.remove('hidden');
-        // Set offline pas keluar (panic mode)
-        set(ref(db, 'presence/' + myId), null);
-    };
-
-    // Update count setiap kali data presence berubah
-    onValue(presenceRef, (s) => {
-        const count = s.val() ? Object.keys(s.val()).length : 1;
-        document.getElementById('online-count').innerText = '👁️ ' + count;
-    });
-
+    window.checkPw = () => { if(document.getElementById('pw').value === 'y') { document.getElementById('gallery-box').classList.add('hidden'); document.getElementById('chat-box').classList.remove('hidden'); } else { document.getElementById('pw').value = ''; } };
+    window.panicMode = () => { document.getElementById('chat-box').classList.add('hidden'); document.getElementById('gallery-box').classList.remove('hidden'); };
     window.toggleInput = () => { document.getElementById('input-popup').classList.toggle('hidden'); document.getElementById('msg').focus(); };
     window.sendReaction = (emoji) => push(chatRef, { sender: myId, type: 'reaction', emoji: emoji });
 
-    window.showEmoji = (emoji) => {
-        for(let i=0; i<5; i++) {
-            const el = document.createElement('div');
-            el.className = 'emoji-float'; el.innerHTML = emoji;
-            el.style.left = (Math.random() * 80 + 10) + '%';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 2000);
-        }
-    };
-
     onChildAdded(chatRef, (s) => {
         const data = s.val();
-        const isChatActive = !document.getElementById('chat-box').classList.contains('hidden');
-
         if(data.type === 'reaction') {
-            if(isChatActive) showEmoji(data.emoji);
+            if(!document.getElementById('chat-box').classList.contains('hidden')) {
+                for(let i=0; i<5; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'emoji-float'; el.innerHTML = data.emoji;
+                    el.style.left = (Math.random() * 80 + 10) + '%';
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 2000);
+                }
+            }
         } else {
-            const container = document.getElementById('messages');
-            container.innerHTML += `<div class="msg-wrapper ${data.sender === myId ? 'me' : 'other'}"><div class="msg"><div>${data.text}</div></div></div>`;
-            container.scrollTop = container.scrollHeight;
+            document.getElementById('messages').innerHTML += `
+                <div class="msg-wrapper ${data.sender === myId ? 'me' : 'other'}">
+                    <div class="msg">
+                        <div>${data.text}</div>
+                        <div class="msg-info">${data.time}</div>
+                    </div>
+                </div>`;
+            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
         }
     });
 
@@ -160,10 +136,18 @@
         e.preventDefault();
         const input = document.getElementById('msg');
         if(!input.value.trim()) return;
-        push(chatRef, { sender: myId, text: input.value.trim() });
+        push(chatRef, { 
+            sender: myId, 
+            text: input.value.trim(), 
+            time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) 
+        });
         input.value = '';
         document.getElementById('input-popup').classList.add('hidden');
     };
+    
+    onValue(ref(db, 'presence'), (s) => document.getElementById('online-count').innerText = '👁️ ' + (s.val() ? Object.keys(s.val()).length : 1));
+    set(ref(db, 'presence/' + myId), true);
+    onDisconnect(ref(db, 'presence/' + myId)).remove();
 </script>
 </body>
 </html>
